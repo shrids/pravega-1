@@ -57,7 +57,8 @@ public class RemoteSequential implements TestExecutor {
                 .<Void>thenApply(v1 -> {
                     if (CLIENT.getJob(jobId).getHistory().getFailureCount() != 0) {
                         throw new AssertionError("Test failed, detailed logs can be found at " +
-                                "https://MasterIP/mesos, under metronome framework tasks. MethodName: " + methodName);
+                                "https://" + MESOS_MASTER + "/mesos, under metronome framework tasks. MethodName:" +
+                                methodName);
                     }
                     return null;
                 }).whenComplete((v, ex) -> {

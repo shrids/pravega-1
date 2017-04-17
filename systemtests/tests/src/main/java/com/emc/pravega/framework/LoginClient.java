@@ -24,7 +24,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
  */
 public class LoginClient {
 
-    static final String MESOS_MASTER = getMesosMasterIP();
+    public static final String MESOS_MASTER = getMesosMasterIP();
     public static final String MESOS_URL = String.format("https://%s", MESOS_MASTER);
 
     private static final String TOKEN_HEADER_NAME = "X-AUTH-TOKEN";
