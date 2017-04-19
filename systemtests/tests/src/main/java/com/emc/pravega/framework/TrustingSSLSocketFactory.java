@@ -98,7 +98,7 @@ public final class TrustingSSLSocketFactory extends SSLSocketFactory
                 }
             };
             sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-        } catch (NoSuchAlgorithmException | KeyManagementException |KeyStoreException e) {
+        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
             throw new TestFrameworkException(InternalError, "Failed to set up SSL Context", e);
         }
         return sslContext;
