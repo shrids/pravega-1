@@ -5,6 +5,9 @@
  */
 package com.emc.pravega.framework;
 
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -16,7 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
@@ -25,6 +31,8 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static com.emc.pravega.framework.TestFrameworkException.Type.InternalError;
 
 /**
  * Ensure the host verification is disabled.
@@ -79,6 +87,21 @@ public final class TrustingSSLSocketFactory extends SSLSocketFactory
             SSL_SOCKET_FACTORY_MAP.put(serverAlias, new TrustingSSLSocketFactory(serverAlias));
         }
         return SSL_SOCKET_FACTORY_MAP.get(serverAlias);
+    }
+
+    public static SSLContext getSslContext() {
+        SSLContext sslContext;
+        try {
+            TrustStrategy acceptingTrustStrategy = new TrustStrategy() {
+                public boolean isTrusted(X509Certificate[] certificate, String authType) {
+                    return true;
+                }
+            };
+            sslContext = SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+        } catch (NoSuchAlgorithmException | KeyManagementException |KeyStoreException e) {
+            throw new TestFrameworkException(InternalError, "Failed to set up SSL Context", e);
+        }
+        return sslContext;
     }
 
     static Socket setEnabledCipherSuites(Socket socket) {

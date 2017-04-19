@@ -12,6 +12,7 @@ import mesosphere.marathon.client.auth.TokenAuthRequestInterceptor;
 
 import java.util.List;
 
+import static com.emc.pravega.framework.LoginClient.LOGIN_URL;
 import static com.emc.pravega.framework.LoginClient.MESOS_URL;
 import static com.emc.pravega.framework.LoginClient.getAuthenticationRequestInterceptor;
 
@@ -22,7 +23,6 @@ import static com.emc.pravega.framework.LoginClient.getAuthenticationRequestInte
 public class AuthEnabledMetronomeClient {
 
     private static final String ENDPOINT = MESOS_URL + "/service/metronome";
-    private static final String LOGIN_URL = MESOS_URL + "/auth/v1";
 
     public static Metronome getClient() {
         return createMetronomeClient();

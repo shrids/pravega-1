@@ -21,6 +21,7 @@ import mesosphere.marathon.client.utils.ModelUtils;
 
 import java.util.Calendar;
 
+import static com.emc.pravega.framework.LoginClient.LOGIN_URL;
 import static com.emc.pravega.framework.LoginClient.MESOS_URL;
 import static com.emc.pravega.framework.LoginClient.getAuthenticationRequestInterceptor;
 import static com.emc.pravega.framework.LoginClient.getClientHostVerificationDisabled;
@@ -35,7 +36,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class AuthEnabledMarathonClient {
 
     private static final String ENDPOINT = MESOS_URL + "/marathon";
-    private static final String LOGIN_URL = MESOS_URL + "/auth/v1";
+
     private static final String APPLICATION_JSON = "application/json";
 
     public static Marathon getClient() {

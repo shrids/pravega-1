@@ -740,9 +740,9 @@ project('singlenode') {
 
 project('systemtests:tests') {
     dependencies {
-        // https://mvnrepository.com/artifact/com.mesosphere/marathon-client
         runtime group: 'ch.qos.logback', name: 'logback-classic', version: qosLogbackVersion
         compile group: 'com.mesosphere', name: 'marathon-client', version: marathonClientVersion
+        compile group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: apachehttpAysncClientVersion
         compile project(':controller:server')
         compile project(":clients:streaming")
         compile project(":testcommon")
