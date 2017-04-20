@@ -106,8 +106,12 @@ public class SegmentSelector {
         // not return a StreamSegments object. The Map that getSuccessors returns is sufficient
         // for the call to get pending events, but not to update currentSegments, which we need
         // to do here.
-        currentSegments = FutureHelpers.getAndHandleExceptions(controller.getSuccessors(sealedSegment),
-                                                                                    RuntimeException::new);
+
+        //TODO:
+        Map<Segment, List<Integer>> successors = FutureHelpers.getAndHandleExceptions(controller.getSuccessors
+                (sealedSegment), RuntimeException::new);
+
+        log.info("Successors for sealed segment {} is {}", sealedSegment, successors );
 
         return getPendingEvents(currentSegments.getSegments());
     }

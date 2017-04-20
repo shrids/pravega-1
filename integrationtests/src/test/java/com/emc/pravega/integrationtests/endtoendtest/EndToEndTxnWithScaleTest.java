@@ -29,6 +29,8 @@ import com.emc.pravega.testcommon.TestUtils;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.test.TestingServer;
@@ -79,6 +81,63 @@ public class EndToEndTxnWithScaleTest {
         server.close();
         serviceBuilder.close();
         zkTestServer.close();
+    }
+
+    @Test
+    public void testWriteWithScale() throws Exception {
+        StreamConfiguration config = StreamConfiguration.builder()
+                .scope("testScope")
+                .streamName("testStream")
+                .scalingPolicy(ScalingPolicy.byEventRate(10, 2, 1))
+                .build();
+        Controller controller = controllerWrapper.getController();
+        controllerWrapper.getControllerService().createScope("testScope").get();
+        controller.createStream(config).get();
+        @Cleanup
+        ClientFactory clientFactory = ClientFactory.withScope("testScope", controller);
+
+//        @Cleanup
+//        ReaderGroupManager groupManager = new ReaderGroupManagerImpl("testScope", controller, clientFactory);
+//        groupManager.createReaderGroup("reader", ReaderGroupConfig.builder().build(), Collections.singleton("testStream"));
+//        @Cleanup
+//        EventStreamReader<String> reader = clientFactory.createReader("readerId", "reader", new JavaSerializer<>(),
+//                ReaderConfig.builder().build());
+
+//        //No events written, hence the reader should return with empty result.
+//        EventRead<String> eventNull = reader.readNextEvent(100);
+//        assertNull(eventNull.getEvent());
+
+        @Cleanup
+        EventStreamWriter<String> eventWriter = clientFactory.createEventWriter("testStream", new JavaSerializer<>(),
+                EventWriterConfig.builder().build());
+//        eventWriter.writeEvent("testdata1");
+//        eventWriter.flush();
+
+//        //No events written, hence the reader should return with empty result.
+//        EventRead<String> eventbeforScale = reader.readNextEvent(1000);
+//        assertNotNull(eventbeforScale.getEvent());
+//        assertEquals("testdata1", eventbeforScale.getEvent());
+
+        // scale
+        Stream stream = new StreamImpl("testScope", "testStream");
+        Map<Double, Double> map = new HashMap<>();
+        map.put(0.0, 0.5);
+        map.put(0.5, 1.0);
+        Boolean result = controller.scaleStream(stream, Collections.singletonList(0), map).get();
+
+        assertTrue(result);
+
+        eventWriter.writeEvent("testdata2");
+        TimeUnit.SECONDS.sleep(20);
+        eventWriter.flush();
+
+
+//
+//        EventRead<String> event = reader.readNextEvent(10000);
+//        assertNotNull(event);
+//        assertEquals("testdata2", event.getEvent());
+        System.out.println("end of test");
+        TimeUnit.SECONDS.sleep(20);
     }
 
     @Test(timeout = 10000)
